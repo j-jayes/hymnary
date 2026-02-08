@@ -1,0 +1,102 @@
+---
+title: "Hymnary Organ–Hymnal Crossover"
+subtitle: "Matching Allen organ hymns to their tunes and hymn book entries"
+---
+
+::: {.attribution-banner}
+All hymn and tune data sourced from [Hymnary.org](https://hymnary.org/) — a service of the Calvin Institute of Christian Worship and the Christian Classics Ethereal Library.
+:::
+
+## About This Project
+
+Our church has an **Allen organ** with built-in hymns selectable from the console controller display. This project identifies which of those hymns also appear in our church hymn book, so the organist knows exactly which built-in accompaniments are available for each service.
+
+### How It Works
+
+1. **Organ hymn list** — We started with the 182 hymns programmed into the Allen organ's console controller.
+2. **Tune lookup** — For each hymn, we searched [Hymnary.org](https://hymnary.org/) to find which tunes are associated with it — many hymns have multiple tune settings.
+3. **Metadata collection** — For each tune, we collected the title, composer, meter, musical incipit, key, MIDI files, and other metadata.
+4. **AI-powered filtering** — We used GPT-5.2 to classify each tune as genuinely relevant or a search false-positive, running 3 independent checks with majority voting for reliability.
+5. **Hymn book matching** — *(Coming soon)* We'll cross-reference against the church's hymn book to find which organ hymns match entries in the book.
+
+### Quick Stats
+
+```{python}
+#| echo: false
+#| output: asis
+
+import json
+from pathlib import Path
+
+filtered_path = Path("../data/processed/hymn_tune_index_filtered.json")
+raw_path = Path("../data/processed/hymn_tune_index.json")
+classifications_path = Path("../data/processed/classifications.json")
+
+data_path = filtered_path if filtered_path.exists() else raw_path
+
+n_hymns = "—"
+n_unique_tunes = "—"
+n_with_midi = "—"
+
+if data_path and data_path.exists():
+    hymn_data = json.loads(data_path.read_text())
+    n_hymns = len(hymn_data)
+    
+    unique_slugs = set()
+    midi_count = 0
+    for h in hymn_data:
+        for t in h.get("tunes_found", []):
+            slug = t.get("tune_slug")
+            if slug:
+                unique_slugs.add(slug)
+            if t.get("detail", {}).get("midi_url"):
+                midi_count += 1
+    n_unique_tunes = len(unique_slugs)
+    n_with_midi = midi_count
+
+print(f"""
+::: {{.grid}}
+
+::: {{.g-col-4}}
+::: {{.stat-card}}
+[{n_hymns}]{{.stat-number}}
+[Organ Hymns]{{.stat-label}}
+:::
+:::
+
+::: {{.g-col-4}}
+::: {{.stat-card}}
+[{n_unique_tunes}]{{.stat-number}}
+[Unique Tunes]{{.stat-label}}
+:::
+:::
+
+::: {{.g-col-4}}
+::: {{.stat-card}}
+[{n_with_midi}]{{.stat-number}}
+[MIDI Files]{{.stat-label}}
+:::
+:::
+
+:::
+""")
+```
+
+## Browse the Data
+
+Head to the **[Hymn–Tune Index](hymns.qmd)** to explore the full list of organ hymns and their associated tunes, or see the **[About](about.qmd)** page for methodology details and full attribution.
+
+```{python}
+#| echo: false
+#| output: asis
+
+from pathlib import Path
+
+if Path("hymn_tune_data.xlsx").exists():
+    print("""
+::: {.callout-tip}
+## Download the Data
+📥 **[Download full dataset as Excel](hymn_tune_data.xlsx)** — a tidy spreadsheet with all hymn–tune data, AI relevance classification, MIDI links, and metadata. Perfect for sorting and filtering in Excel.
+:::
+""")
+```

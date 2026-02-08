@@ -1,0 +1,26 @@
+project:
+  type: website
+  output-dir: ../docs
+  resources:
+    - "hymn_tune_data.xlsx"
+
+website:
+  title: "🎵 Hymnary Organ–Hymnal Crossover"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: hymns.qmd
+        text: Hymn–Tune Index
+      - href: about.qmd
+        text: About & Attribution
+
+format:
+  html:
+    theme:
+      light: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true

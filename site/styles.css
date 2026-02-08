@@ -1,0 +1,178 @@
+/*
+ * Custom styles for the Hymnary Organ–Hymnal Crossover site.
+ *
+ * Uses a warm, traditional palette appropriate for church music context
+ * while keeping things modern and readable.
+ */
+
+/* ── Root variables ── */
+:root {
+  --primary-warm: #6b4c3b;
+  --primary-gold: #c9a84c;
+  --bg-cream: #faf7f2;
+  --bg-card: #ffffff;
+  --text-dark: #2c2c2c;
+  --text-muted: #6b6b6b;
+  --border-light: #e8e0d4;
+  --accent-blue: #4a7c8f;
+}
+
+/* ── Body ── */
+body {
+  background-color: var(--bg-cream);
+  color: var(--text-dark);
+}
+
+/* ── Navbar ── */
+.navbar {
+  border-bottom: 3px solid var(--primary-gold);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ── Headings ── */
+h1, h2, h3 {
+  color: var(--primary-warm);
+  font-weight: 600;
+}
+
+h1 {
+  border-bottom: 2px solid var(--primary-gold);
+  padding-bottom: 0.4em;
+  margin-bottom: 0.8em;
+}
+
+/* ── Cards / callouts ── */
+.callout {
+  border-left-color: var(--primary-gold) !important;
+  background-color: var(--bg-card);
+}
+
+.callout-title {
+  color: var(--primary-warm);
+}
+
+/* ── Tables ── */
+.table {
+  border-color: var(--border-light);
+}
+
+.table thead th {
+  background-color: var(--primary-warm);
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-gold);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: rgba(201, 168, 76, 0.05);
+}
+
+.table tbody tr:hover {
+  background-color: rgba(201, 168, 76, 0.12);
+}
+
+/* ── Links ── */
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary-warm);
+  text-decoration: underline;
+}
+
+/* ── Attribution banner ── */
+.attribution-banner {
+  background: linear-gradient(135deg, var(--primary-warm), #8b6f5f);
+  color: #fff;
+  padding: 1.2em 1.5em;
+  border-radius: 8px;
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.attribution-banner a {
+  color: var(--primary-gold);
+  font-weight: 600;
+}
+
+.attribution-banner a:hover {
+  color: #fff;
+}
+
+/* ── Summary stat cards ── */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1.5em;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-card .stat-number {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: var(--primary-warm);
+  line-height: 1.2;
+}
+
+.stat-card .stat-label {
+  color: var(--text-muted);
+  font-size: 0.95em;
+  margin-top: 0.3em;
+}
+
+/* ── Footer ── */
+.nav-footer {
+  border-top: 2px solid var(--primary-gold);
+  background-color: var(--bg-cream);
+}
+
+/* ── Responsive table wrapper ── */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+/* ── Relevance badges ── */
+.relevance-badge {
+  display: inline-block;
+  font-size: 0.7em;
+  font-weight: 600;
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  margin-left: 0.4em;
+  vertical-align: middle;
+  cursor: help;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-high {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-low {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* ── Search result count ── */
+.search-count {
+  color: var(--text-muted);
+  font-size: 0.8em;
+  font-style: italic;
+}

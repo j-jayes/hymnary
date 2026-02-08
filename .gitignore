@@ -152,7 +152,7 @@ venv.bak/
 .ropeproject
 
 # mkdocs documentation
-/site
+#/site
 
 # mypy
 .mypy_cache/
@@ -211,6 +211,6 @@ data/raw/search_results/
 data/raw/tune_pages/
 site/_site/
 site/.quarto/
-docs/
+#docs/
 .DS_Store
 example-web-pages/

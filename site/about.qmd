@@ -1,0 +1,75 @@
+---
+title: "About & Attribution"
+subtitle: "Methodology, data sources, and credits"
+---
+
+## Data Source
+
+::: {.attribution-banner}
+**All hymn and tune data on this site is sourced from [Hymnary.org](https://hymnary.org/).**
+
+Hymnary.org is a comprehensive index of hymns and hymnals, operated as a service of the [Calvin Institute of Christian Worship](https://worship.calvin.edu/) at Calvin University and the [Christian Classics Ethereal Library (CCEL)](https://www.ccel.org/).
+
+We are deeply grateful for this incredible free resource that makes projects like this possible.
+:::
+
+## Methodology
+
+### Input Data
+
+The organ hymn list comes from an **Allen organ console controller display**, which shows 182 built-in hymns by abbreviated name. Each abbreviation was mapped to its full hymn title.
+
+Some hymns have **A/B variants** (e.g., "Away in a Manger - A" and "Away in a Manger - B"), indicating that the organ has two different tune settings for the same text. In these cases, we search once and present all matching tunes, sorted by prevalence.
+
+### Scraping Process
+
+For each of the 182 organ hymns:
+
+1. **Search** — We queried `hymnary.org/search?qu={title}+in%3Atunes` to find tune matches.
+2. **Tune detail** — For each tune found in search results, we fetched the full detail page at `hymnary.org/tune/{slug}`.
+3. **Parse** — We extracted structured metadata using BeautifulSoup (Python) from the HTML:
+   - Tune title, composer, place of origin
+   - Meter pattern, melodic incipit, key signature
+   - Copyright status, number of hymnal appearances
+   - Associated texts and alternative tune settings
+   - Historical notes where available
+
+### Scraping Ethics
+
+This scraper was designed to be **respectful** of hymnary.org's servers:
+
+| Measure | Detail |
+|---------|--------|
+| **Request delay** | 15 seconds between every request (3× their robots.txt `Crawl-delay: 5`) |
+| **Caching** | All HTML responses cached locally; pages fetched only once |
+| **Resume support** | Pipeline checkpoints after every hymn; interrupted runs pick up seamlessly |
+| **User-Agent** | Clearly identifies this as a personal church project |
+| **robots.txt** | Verified compliance on 7 February 2026; only accesses allowed paths |
+
+### Data Files
+
+The processed data is available in the project repository:
+
+- **`data/processed/hymn_tune_index.json`** — Master index mapping each organ hymn to all associated tunes with full metadata
+- **`data/processed/tunes.json`** — Deduplicated tune dictionary keyed by slug
+- **`data/processed/summary.csv`** — Flat table for easy analysis
+
+## Hymn Book Crossover (Coming Soon)
+
+The next phase of this project will cross-reference the organ hymns against the church's hymn book index to identify which hymns are available on both. Stay tuned.
+
+## Technical Stack
+
+- **Python 3.12** with [uv](https://docs.astral.sh/uv/) for package management
+- **BeautifulSoup4** + **lxml** for HTML parsing
+- **Pandas** for data processing
+- **Quarto** for website generation
+- **GitHub Pages** for hosting
+
+## License
+
+This project is for **personal, non-commercial church ministry use**. Hymn data copyright belongs to the respective holders as noted in each tune's metadata on Hymnary.org.
+
+## Contact
+
+This project was built to help our church organist identify which built-in Allen organ hymns match the church hymn book. If you have questions or suggestions, please open an issue on the project's GitHub repository.
