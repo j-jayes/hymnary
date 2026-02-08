@@ -17,9 +17,7 @@ website:
 
 format:
   html:
-    theme:
-      light: cosmo
-    css: styles.css
+    theme: styles.scss
     toc: true
     toc-depth: 3
     code-fold: true

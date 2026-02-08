@@ -1,0 +1,342 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif+JP:300, 300i&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato:400,400i,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap');
+
+
+/*-- scss:defaults --*/
+
+$theme: "simplex" !default;
+
+//
+// Color system
+//
+
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #ddd !default;
+$gray-300: #ccc !default;
+$gray-400: #bbb !default;
+$gray-500: #adb5bd !default;
+$gray-600: #777 !default;
+$gray-700: #444 !default;
+$gray-800: #373a3c !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+
+$blue:    #007bff !default;
+$indigo:  #6610f2 !default;
+$purple:  #9b479f !default;
+$pink:    #e83e8c !default;
+$red:     #d9230f !default;
+$orange:  #d9831f !default;
+$yellow:  #ffc107 !default;
+$green:   #469408 !default;
+$teal:    #20c997 !default;
+$cyan:    #029acf !default;
+
+$primary:       #2b8cbe !default;
+$secondary:     #DEEBF7 !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $orange !default;
+$danger:        $purple !default;
+$light:         $white !default;
+$dark:          $gray-800 !default;
+
+$min-contrast-ratio:   2.8 !default;
+
+// Body
+
+$body-bg:                   mix($white, $black, 99%) !default;
+
+$enable-shadows: true !default;
+
+// Fonts
+
+// stylelint-disable-next-line value-keyword-case
+$font-family-sans-serif:    Noto Serif JP !default;
+$font-family-monospace:     IBM Plex Mono !default;
+$font-family-base:          Lato !default;
+
+$headings-margin-bottom:    1.5rem !default;
+
+
+$font-size-base: 1.1rem !default;
+$body-color: #404040 !default;
+$headings-color: #2b8cbe !default;
+$headings-font-weight: 300 !default;
+
+
+
+// Dropdowns
+
+$dropdown-link-hover-color:         $white !default;
+$dropdown-link-hover-bg:            $primary !default;
+
+// Navs
+
+$nav-link-padding-y:                .9rem !default;
+$nav-link-disabled-color:           $gray-400 !default;
+$nav-tabs-border-color:             mix($white, $black, 93.5%) !default;
+
+// Navbar
+
+$navbar-dark-color:                 rgba($white, .75) !default;
+$navbar-dark-hover-color:           $white !default;
+
+// Pagination
+
+$pagination-border-color:           $nav-tabs-border-color !default;
+$pagination-hover-color:            $white !default;
+$pagination-hover-bg:               $primary !default;
+$pagination-hover-border-color:     $primary !default;
+$pagination-disabled-color:         $gray-400 !default;
+$pagination-disabled-border-color:  $pagination-border-color !default;
+
+// Cards
+
+$card-border-color:                 $nav-tabs-border-color !default;
+
+// Popovers
+
+$popover-border-color:              $nav-tabs-border-color !default;
+
+// Modals
+
+$modal-content-border-color:        $nav-tabs-border-color !default;
+$modal-header-border-color:         $nav-tabs-border-color !default;
+
+// Progress bars
+
+$progress-bar-color:                $primary !default;
+
+// List group
+
+$list-group-border-color:           $nav-tabs-border-color !default;
+$list-group-disabled-bg:            $nav-tabs-border-color !default;
+
+// Breadcrumbs
+
+$breadcrumb-padding-y:              .375rem !default;
+$breadcrumb-padding-x:              .75rem !default;
+$breadcrumb-border-radius:          .25rem !default;
+
+
+
+/*-- scss:rules --*/
+
+
+// Variables
+
+$web-font-path: "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" !default;
+@if $web-font-path {
+  @import url($web-font-path);
+}
+
+// Mixins
+
+@mixin btn-shadow($color){
+  @include gradient-y-three-colors(tint-color($color, 6%), $color, 6%, shade-color($color, 6%));
+  filter: none;
+  border: 1px solid shade-color($color, 13%);
+}
+
+// Navbar
+
+.navbar {
+  border-width: 1px;
+  border-style: solid;
+  border-color: shade-color($navbar-bg, 13%);
+
+  &-fixed-top {
+    border-width: 0 0 1px;
+  }
+
+  &-fixed-bottom {
+    border-top-width: 1px 0 0 0;
+    border-style: solid;
+  }
+
+  &.bg-primary {
+    background-color: $primary !important;
+    border-color: shade-color($primary, 13%) !important;
+  }
+
+  &.bg-dark {
+    border-color: shade-color($dark, 13%) !important;
+  }
+
+  &.bg-light {
+    border-color: shade-color($white, 13%);
+  }
+}
+
+// Buttons
+
+.btn-primary,
+.btn-primary:hover {
+  @include btn-shadow($primary);
+}
+
+.btn-secondary,
+.btn-secondary:hover {
+  @include btn-shadow($secondary);
+}
+
+.btn-secondary:focus,
+.btn-secondary:not([disabled]):not(.disabled):active,
+.btn-secondary:not([disabled]):not(.disabled).active {
+  box-shadow: 0 0 0 .2rem rgba($gray-200, .5);
+}
+
+.btn-success,
+.btn-success:hover {
+  @include btn-shadow($success);
+}
+
+.btn-info,
+.btn-info:hover {
+  @include btn-shadow($info);
+}
+
+.btn-warning,
+.btn-warning:hover {
+  @include btn-shadow($warning);
+}
+
+.btn-danger,
+.btn-danger:hover {
+  @include btn-shadow($danger);
+}
+
+.btn-dark,
+.btn-dark:hover {
+  @include btn-shadow($dark);
+}
+
+.btn-light,
+.btn-light:hover {
+  @include btn-shadow($light);
+}
+
+.btn-outline-secondary {
+  border-color: $gray-400;
+  color: $gray-400;
+
+  &:hover {
+    background-color: $gray-400;
+    color: $white;
+  }
+}
+
+// Typography
+
+.text-secondary {
+  color: $gray-600 !important;
+}
+
+// Forms
+
+legend,
+label {
+  color: $headings-color;
+}
+
+// Navs
+
+.breadcrumb {
+  border: 1px solid shade-color($white, 13%);
+}
+
+.pagination {
+  .page-link:hover {
+    text-decoration: none;
+  }
+}
+
+// Indicators
+
+.badge {
+  &.bg-secondary,
+  &.bg-light {
+    color: $dark;
+  }
+}
+
+/* ── Custom Project Styles ── */
+
+/* ── Relevance badges ── */
+.relevance-badge {
+  display: inline-block;
+  font-size: 0.7em;
+  font-weight: 600;
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  margin-left: 0.4em;
+  vertical-align: middle;
+  cursor: help;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge-high {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-low {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* ── Search result count ── */
+.search-count {
+  color: #6b6b6b;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+/* ── Stats ── */
+.stat-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5em;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-card .stat-number {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1.2;
+}
+
+.stat-card .stat-label {
+  color: #777;
+  font-size: 0.95em;
+  margin-top: 0.3em;
+}
+
+/* ── Attribution banner ── */
+.attribution-banner {
+  background: linear-gradient(135deg, $primary, $secondary);
+  color: $white;
+  padding: 1.2em 1.5em;
+  border-radius: 8px;
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.attribution-banner a {
+  color: $white;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
