@@ -9,7 +9,7 @@ All hymn and tune data sourced from [Hymnary.org](https://hymnary.org/) — a se
 
 ## About This Project
 
-Our church has an **Allen organ** with built-in hymns selectable from the console controller display. This project identifies which of those hymns also appear in our church hymn book, so the organist knows exactly which built-in accompaniments are available for each service.
+All Souls Anglican Church in Ballito has an **Allen organ** with built-in hymns selectable from the console controller display. This project identifies which of those hymns also appear in the church hymn book, so the music selector knows exactly which built-in accompaniments are available for each service.
 
 ### How It Works
 

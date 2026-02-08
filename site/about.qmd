@@ -72,4 +72,4 @@ This project is for **personal, non-commercial church ministry use**. Hymn data 
 
 ## Contact
 
-This project was built to help our church organist identify which built-in Allen organ hymns match the church hymn book. If you have questions or suggestions, please open an issue on the project's GitHub repository.
+This project was built to help All Souls Anglican Church music selector identify which built-in Allen organ hymns match the church hymn book. If you have questions or suggestions, please open an issue on the project's GitHub repository.

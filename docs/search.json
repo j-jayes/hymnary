@@ -18,7 +18,7 @@
     "href": "index.html#about-this-project",
     "title": "Hymnary Organ–Hymnal Crossover",
     "section": "About This Project",
-    "text": "About This Project\nOur church has an Allen organ with built-in hymns selectable from the console controller display. This project identifies which of those hymns also appear in our church hymn book, so the organist knows exactly which built-in accompaniments are available for each service.\n\nHow It Works\n\nOrgan hymn list — We started with the 182 hymns programmed into the Allen organ’s console controller.\nTune lookup — For each hymn, we searched Hymnary.org to find which tunes are associated with it — many hymns have multiple tune settings.\nMetadata collection — For each tune, we collected the title, composer, meter, musical incipit, key, MIDI files, and other metadata.\nAI-powered filtering — We used GPT-5.2 to classify each tune as genuinely relevant or a search false-positive, running 3 independent checks with majority voting for reliability.\nHymn book matching — (Coming soon) We’ll cross-reference against the church’s hymn book to find which organ hymns match entries in the book.\n\n\n\nQuick Stats\n\n\n\n183 Organ Hymns\n\n\n\n\n265 Unique Tunes\n\n\n\n\n314 MIDI Files"
+    "text": "About This Project\nAll Souls Anglican Church in Ballito has an Allen organ with built-in hymns selectable from the console controller display. This project identifies which of those hymns also appear in the church hymn book, so the music selector knows exactly which built-in accompaniments are available for each service.\n\nHow It Works\n\nOrgan hymn list — We started with the 182 hymns programmed into the Allen organ’s console controller.\nTune lookup — For each hymn, we searched Hymnary.org to find which tunes are associated with it — many hymns have multiple tune settings.\nMetadata collection — For each tune, we collected the title, composer, meter, musical incipit, key, MIDI files, and other metadata.\nAI-powered filtering — We used GPT-5.2 to classify each tune as genuinely relevant or a search false-positive, running 3 independent checks with majority voting for reliability.\nHymn book matching — (Coming soon) We’ll cross-reference against the church’s hymn book to find which organ hymns match entries in the book.\n\n\n\nQuick Stats\n\n\n\n183 Organ Hymns\n\n\n\n\n265 Unique Tunes\n\n\n\n\n314 MIDI Files"
   },
   {
     "objectID": "index.html#browse-the-data",
@@ -74,6 +74,6 @@
     "href": "about.html#contact",
     "title": "About & Attribution",
     "section": "Contact",
-    "text": "Contact\nThis project was built to help our church organist identify which built-in Allen organ hymns match the church hymn book. If you have questions or suggestions, please open an issue on the project’s GitHub repository."
+    "text": "Contact\nThis project was built to help All Souls Anglican Church music selector identify which built-in Allen organ hymns match the church hymn book. If you have questions or suggestions, please open an issue on the project’s GitHub repository."
   }
 ]
