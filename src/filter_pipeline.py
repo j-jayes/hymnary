@@ -20,13 +20,14 @@ from __future__ import annotations
 import argparse
 import sys
 import traceback
+import re
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 from src.classifier import classify_hymn, get_client
-from src.config import INTERIM_DIR, PROCESSED_DIR, HYMN_TUNE_INDEX_PATH
+from src.config import INTERIM_DIR, PROCESSED_DIR, HYMN_TUNE_INDEX_PATH, RAW_DIR
 from src.utils import (
     get_logger,
     load_checkpoint,
@@ -46,6 +47,14 @@ FILTERED_INDEX_PATH = PROCESSED_DIR / "hymn_tune_index_filtered.json"
 FILTERED_CSV_PATH = PROCESSED_DIR / "summary_filtered.csv"
 FILTERED_EXCEL_PATH = PROCESSED_DIR / "hymn_tune_data.xlsx"
 FILTER_CHECKPOINT_PATH = INTERIM_DIR / "filter_checkpoint.json"
+MP_CSV_PATH = RAW_DIR / "MP HymnTuneNames.csv"
+
+
+def normalize_title(title: Any) -> str:
+    """Normalize string for matching: uppercase, strip non-alphanumeric."""
+    if not isinstance(title, str):
+        return ""
+    return re.sub(r'[^A-Z0-9]', '', title.upper())
 
 
 # ──────────────────────────────────────────────
@@ -137,6 +146,38 @@ def build_filtered_outputs(
 
     if rows:
         df = pd.DataFrame(rows)
+
+        # ── Match with Mission Praise Book ──
+        if MP_CSV_PATH.exists():
+            try:
+                try:
+                    df_mp = pd.read_csv(MP_CSV_PATH, encoding='utf-8')
+                except UnicodeDecodeError:
+                    df_mp = pd.read_csv(MP_CSV_PATH, encoding='latin-1')
+
+                if "HymnTuneName" in df_mp.columns:
+                    # Create normalized set for O(1) lookup
+                    mp_tunes = set(
+                        normalize_title(t)
+                        for t in df_mp["HymnTuneName"].dropna().astype(str)
+                    )
+                    
+                    # Normalize organ tunes and check
+                    df["_norm_title"] = df["tune_title"].apply(normalize_title)
+                    df["in_hymn_book"] = df["_norm_title"].apply(lambda x: x in mp_tunes if x else False)
+                    df.drop(columns=["_norm_title"], inplace=True)
+                    
+                    match_count = df["in_hymn_book"].sum()
+                    log.info("Matched %d tunes with Mission Praise book", match_count)
+                else:
+                    log.warning("MP CSV missing 'HymnTuneName' column")
+                    df["in_hymn_book"] = False
+            except Exception as e:
+                log.error("Failed to match MP book: %s", e)
+                df["in_hymn_book"] = False
+        else:
+            df["in_hymn_book"] = False
+
         df.to_csv(FILTERED_CSV_PATH, index=False)
         relevant_count = df["is_relevant"].sum()
         log.info(
@@ -182,6 +223,7 @@ def _write_excel(
         ("Hymn Title", "full_title", 35),
         ("Search Results", "total_search_results", 14),
         ("Tune Name", "tune_title", 30),
+        ("In Mission Praise?", "in_hymn_book", 18),
         ("Relevant?", "is_relevant", 11),
         ("Confidence", "confidence", 12),
         ("Votes", "vote_count", 8),
@@ -236,6 +278,8 @@ def _write_excel(
             # Convert booleans to friendly text
             if col_key == "is_relevant":
                 value = "Yes" if value else "No"
+            elif col_key == "in_hymn_book":
+                value = "Yes" if value else ""
 
             # Handle NaN
             if pd.isna(value):
@@ -248,6 +292,10 @@ def _write_excel(
             if col_key == "is_relevant":
                 cell.fill = row_fill
                 cell.font = Font(bold=True)
+
+            # Colour the "In Mission Praise?" column
+            if col_key == "in_hymn_book" and value == "Yes":
+                cell.font = Font(bold=True, color="2E8B57")  # SeaGreen
 
             # Style URL columns as hyperlinks
             if col_key in ("midi_url", "recording_url", "pdf_url", "hymnary_url") and value:

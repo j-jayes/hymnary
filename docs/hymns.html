@@ -193,7 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><em>Showing 183 organ hymns with 341 relevant tune associations (265 unique tunes).</em></p>
-<div id="2c71686d" class="cell" data-execution_count="2">
+<div id="7613482d" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div class="table-responsive">
     
@@ -4452,7 +4452,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>filtered_path <span class="op">=</span> Path(<span class="st">"../data/processed/hymn_tune_index_filtered.json"</span>)</span>
 <span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>raw_path <span class="op">=</span> Path(<span class="st">"../data/processed/hymn_tune_index.json"</span>)</span>
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>classifications_path <span class="op">=</span> Path(<span class="st">"../data/processed/classifications.json"</span>)</span>
-<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>matches_path <span class="op">=</span> Path(<span class="st">"../data/processed/organ_book_matches.csv"</span>)</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>summary_csv_path <span class="op">=</span> Path(<span class="st">"../data/processed/summary_filtered.csv"</span>)</span>
 <span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> filtered_path <span class="cf">if</span> filtered_path.exists() <span class="cf">else</span> raw_path</span>
 <span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a></span>
@@ -4471,113 +4471,118 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Book Matches Lookup</span></span>
 <span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>    book_matches <span class="op">=</span> <span class="bu">set</span>()</span>
-<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> matches_path.exists():</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> summary_csv_path.exists():</span>
 <span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
-<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>            df_match <span class="op">=</span> pd.read_csv(matches_path)</span>
-<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="st">"in_hymn_book"</span> <span class="kw">in</span> df_match.columns <span class="kw">and</span> <span class="st">"tune_slug"</span> <span class="kw">in</span> df_match.columns:</span>
-<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>                 <span class="co"># Get set of slugs that are matched</span></span>
-<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>                book_matches <span class="op">=</span> <span class="bu">set</span>(df_match[df_match[<span class="st">"in_hymn_book"</span>] <span class="op">==</span> <span class="va">True</span>][<span class="st">"tune_slug"</span>].dropna())</span>
-<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
-<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
-<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build HTML table</span></span>
-<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
-<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> hymn <span class="kw">in</span> hymn_data:</span>
-<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> hymn[<span class="st">"full_title"</span>]</span>
-<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>        console <span class="op">=</span> hymn[<span class="st">"console_display"</span>]</span>
-<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>        hymn_key <span class="op">=</span> hymn[<span class="st">"hymn_key"</span>]</span>
-<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>        tunes <span class="op">=</span> hymn.get(<span class="st">"tunes_found"</span>, [])</span>
-<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>        search_total <span class="op">=</span> hymn.get(<span class="st">"total_search_results"</span>, <span class="st">"—"</span>)</span>
-<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> tunes:</span>
-<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>            rows.append(<span class="ss">f"""</span></span>
-<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;tr&gt;</span></span>
-<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;&lt;strong&gt;</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">&lt;/strong&gt;&lt;br&gt;</span></span>
-<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a><span class="ss">                    &lt;small class="text-muted"&gt;</span><span class="sc">{</span>console<span class="sc">}</span><span class="ss">&lt;/small&gt;&lt;/td&gt;</span></span>
-<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td colspan="7"&gt;&lt;em&gt;No tunes found&lt;/em&gt;&lt;/td&gt;</span></span>
-<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;/tr&gt;"""</span>)</span>
-<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
-<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(tunes):</span>
-<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>            detail <span class="op">=</span> t.get(<span class="st">"detail"</span>, {})</span>
-<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>            card <span class="op">=</span> t.get(<span class="st">"search_card"</span>, {})</span>
-<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>            tune_title <span class="op">=</span> detail.get(<span class="st">"title"</span>, card.get(<span class="st">"title"</span>, <span class="st">"—"</span>))</span>
-<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>            composer <span class="op">=</span> detail.get(<span class="st">"composer"</span>, <span class="st">"—"</span>)</span>
-<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>            meter <span class="op">=</span> detail.get(<span class="st">"meter"</span>, <span class="st">"—"</span>)</span>
-<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>            key_sig <span class="op">=</span> detail.get(<span class="st">"key"</span>, <span class="st">"—"</span>)</span>
-<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>            slug <span class="op">=</span> t.get(<span class="st">"tune_slug"</span>, <span class="st">""</span>)</span>
-<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>            url <span class="op">=</span> <span class="ss">f"https://hymnary.org/tune/</span><span class="sc">{</span>slug<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> slug <span class="cf">else</span> <span class="st">"#"</span></span>
-<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>            n_hymnals <span class="op">=</span> detail.get(<span class="st">"num_hymnals"</span>, card.get(<span class="st">"num_hymnals"</span>, <span class="st">"—"</span>))</span>
-<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>            <span class="co"># MIDI link</span></span>
-<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>            midi_url <span class="op">=</span> detail.get(<span class="st">"midi_url"</span>, <span class="st">""</span>)</span>
-<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>            midi_cell <span class="op">=</span> <span class="ss">f'&lt;a href="</span><span class="sc">{</span>midi_url<span class="sc">}</span><span class="ss">" title="Download MIDI"&gt;🎵&lt;/a&gt;'</span> <span class="cf">if</span> midi_url <span class="cf">else</span> <span class="st">""</span></span>
-<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Book Match Icon</span></span>
-<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>            book_cell <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> slug <span class="kw">in</span> book_matches:</span>
-<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>                book_cell <span class="op">=</span> <span class="st">'&lt;span title="Match found in Mission Praise" style="font-size: 1.2em;"&gt;📖&lt;/span&gt;'</span></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>            df_match <span class="op">=</span> pd.read_csv(summary_csv_path)</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Check if column exists (it might be boolean or string "Yes"/"No" depending on how pandas loaded it vs how I saved it)</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>            <span class="co"># I saved it as boolean in dataframe before writing to CSV.</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>            <span class="co"># wait, in filter_pipeline I did: df["in_hymn_book"] = boolean</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>            <span class="co"># then I wrote to csv.</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>            <span class="co"># IN THE EXCEL WRITER, I converted to "Yes"/"No". But the CSV writer used the dataframe directly.</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>            <span class="co"># So CSV has True/False.</span></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="st">"in_hymn_book"</span> <span class="kw">in</span> df_match.columns <span class="kw">and</span> <span class="st">"tune_slug"</span> <span class="kw">in</span> df_match.columns:</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>                book_matches <span class="op">=</span> <span class="bu">set</span>(df_match[df_match[<span class="st">"in_hymn_book"</span>] <span class="op">==</span> <span class="va">True</span>][<span class="st">"tune_slug"</span>].dropna())</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build HTML table</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> hymn <span class="kw">in</span> hymn_data:</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> hymn[<span class="st">"full_title"</span>]</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>        console <span class="op">=</span> hymn[<span class="st">"console_display"</span>]</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>        hymn_key <span class="op">=</span> hymn[<span class="st">"hymn_key"</span>]</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>        tunes <span class="op">=</span> hymn.get(<span class="st">"tunes_found"</span>, [])</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>        search_total <span class="op">=</span> hymn.get(<span class="st">"total_search_results"</span>, <span class="st">"—"</span>)</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> tunes:</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>            rows.append(<span class="ss">f"""</span></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;tr&gt;</span></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;&lt;strong&gt;</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">&lt;/strong&gt;&lt;br&gt;</span></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a><span class="ss">                    &lt;small class="text-muted"&gt;</span><span class="sc">{</span>console<span class="sc">}</span><span class="ss">&lt;/small&gt;&lt;/td&gt;</span></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td colspan="7"&gt;&lt;em&gt;No tunes found&lt;/em&gt;&lt;/td&gt;</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;/tr&gt;"""</span>)</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, t <span class="kw">in</span> <span class="bu">enumerate</span>(tunes):</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>            detail <span class="op">=</span> t.get(<span class="st">"detail"</span>, {})</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>            card <span class="op">=</span> t.get(<span class="st">"search_card"</span>, {})</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>            tune_title <span class="op">=</span> detail.get(<span class="st">"title"</span>, card.get(<span class="st">"title"</span>, <span class="st">"—"</span>))</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>            composer <span class="op">=</span> detail.get(<span class="st">"composer"</span>, <span class="st">"—"</span>)</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>            meter <span class="op">=</span> detail.get(<span class="st">"meter"</span>, <span class="st">"—"</span>)</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>            key_sig <span class="op">=</span> detail.get(<span class="st">"key"</span>, <span class="st">"—"</span>)</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>            slug <span class="op">=</span> t.get(<span class="st">"tune_slug"</span>, <span class="st">""</span>)</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>            url <span class="op">=</span> <span class="ss">f"https://hymnary.org/tune/</span><span class="sc">{</span>slug<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> slug <span class="cf">else</span> <span class="st">"#"</span></span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>            n_hymnals <span class="op">=</span> detail.get(<span class="st">"num_hymnals"</span>, card.get(<span class="st">"num_hymnals"</span>, <span class="st">"—"</span>))</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>            <span class="co"># MIDI link</span></span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>            midi_url <span class="op">=</span> detail.get(<span class="st">"midi_url"</span>, <span class="st">""</span>)</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>            midi_cell <span class="op">=</span> <span class="ss">f'&lt;a href="</span><span class="sc">{</span>midi_url<span class="sc">}</span><span class="ss">" title="Download MIDI"&gt;🎵&lt;/a&gt;'</span> <span class="cf">if</span> midi_url <span class="cf">else</span> <span class="st">""</span></span>
 <span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Confidence badge from classification</span></span>
-<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>            clf_entry <span class="op">=</span> relevance_lookup.get((hymn_key, slug), {})</span>
-<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>            confidence <span class="op">=</span> clf_entry.get(<span class="st">"confidence"</span>, <span class="st">""</span>)</span>
-<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>            reasoning <span class="op">=</span> clf_entry.get(<span class="st">"reasoning"</span>, <span class="st">""</span>)</span>
-<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>            vote <span class="op">=</span> clf_entry.get(<span class="st">"vote_count"</span>, <span class="st">""</span>)</span>
-<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>            total_runs <span class="op">=</span> clf_entry.get(<span class="st">"total_runs"</span>, <span class="st">""</span>)</span>
-<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>            badge <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> confidence:</span>
-<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>                badge_class <span class="op">=</span> {</span>
-<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"high"</span>: <span class="st">"badge-high"</span>,</span>
-<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"medium"</span>: <span class="st">"badge-medium"</span>,</span>
-<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"low"</span>: <span class="st">"badge-low"</span>,</span>
-<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>                }.get(confidence, <span class="st">"badge-medium"</span>)</span>
-<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>                vote_str <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>vote<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>total_runs<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> vote <span class="op">!=</span> <span class="st">""</span> <span class="cf">else</span> <span class="st">""</span></span>
-<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>                badge <span class="op">=</span> <span class="ss">f'&lt;span class="relevance-badge </span><span class="sc">{</span>badge_class<span class="sc">}</span><span class="ss">" title="</span><span class="sc">{</span>reasoning<span class="sc">}</span><span class="ss">"&gt;</span><span class="sc">{</span>confidence<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>vote_str<span class="sc">}</span><span class="ss">)&lt;/span&gt;'</span></span>
-<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>            hymn_cell <span class="op">=</span> (</span>
-<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;strong&gt;</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">&lt;/strong&gt;&lt;br&gt;'</span></span>
-<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;small class="text-muted"&gt;</span><span class="sc">{</span>console<span class="sc">}</span><span class="ss">&lt;/small&gt;&lt;br&gt;'</span></span>
-<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;small class="search-count"&gt;</span><span class="sc">{</span>search_total<span class="sc">}</span><span class="ss"> results&lt;/small&gt;'</span></span>
-<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>            ) <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
-<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>            rowspan <span class="op">=</span> <span class="ss">f' rowspan="</span><span class="sc">{</span><span class="bu">len</span>(tunes)<span class="sc">}</span><span class="ss">"'</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
-<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>            td_hymn <span class="op">=</span> <span class="ss">f'&lt;td</span><span class="sc">{</span>rowspan<span class="sc">}</span><span class="ss">&gt;</span><span class="sc">{</span>hymn_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;'</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
-<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>            rows.append(<span class="ss">f"""</span></span>
-<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;tr&gt;</span></span>
-<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a><span class="ss">                </span><span class="sc">{</span>td_hymn<span class="sc">}</span></span>
-<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;&lt;a href="</span><span class="sc">{</span>url<span class="sc">}</span><span class="ss">" target="_blank"&gt;</span><span class="sc">{</span>tune_title<span class="sc">}</span><span class="ss">&lt;/a&gt; </span><span class="sc">{</span>badge<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td class="text-center"&gt;</span><span class="sc">{</span>book_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>composer<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>meter<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>key_sig<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>n_hymnals<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td class="text-center"&gt;</span><span class="sc">{</span>midi_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
-<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;/tr&gt;"""</span>)</span>
-<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a>    table_html <span class="op">=</span> <span class="ss">f"""</span></span>
-<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;div class="table-responsive"&gt;</span></span>
-<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;table class="table table-striped table-hover"&gt;</span></span>
-<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;thead&gt;</span></span>
-<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;tr&gt;</span></span>
-<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th style="min-width:200px"&gt;Hymn&lt;/th&gt;</span></span>
-<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Tune&lt;/th&gt;</span></span>
-<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th class="text-center" width="50"&gt;Book&lt;/th&gt;</span></span>
-<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Composer&lt;/th&gt;</span></span>
-<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Meter&lt;/th&gt;</span></span>
-<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Key&lt;/th&gt;</span></span>
-<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Hymnals&lt;/th&gt;</span></span>
-<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;MIDI&lt;/th&gt;</span></span>
-<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;/tr&gt;</span></span>
-<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/thead&gt;</span></span>
-<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;tbody&gt;</span></span>
-<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="ss">        </span><span class="sc">{</span><span class="st">""</span><span class="sc">.</span>join(rows)<span class="sc">}</span></span>
-<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/tbody&gt;</span></span>
-<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/table&gt;</span></span>
-<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/div&gt;</span></span>
-<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
-<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a>    display(HTML(table_html))</span>
-<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Book Match Icon</span></span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>            book_cell <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> slug <span class="kw">in</span> book_matches:</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>                book_cell <span class="op">=</span> <span class="st">'&lt;span title="Match found in Mission Praise" style="font-size: 1.2em;"&gt;📖&lt;/span&gt;'</span></span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Confidence badge from classification</span></span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>            clf_entry <span class="op">=</span> relevance_lookup.get((hymn_key, slug), {})</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>            confidence <span class="op">=</span> clf_entry.get(<span class="st">"confidence"</span>, <span class="st">""</span>)</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>            reasoning <span class="op">=</span> clf_entry.get(<span class="st">"reasoning"</span>, <span class="st">""</span>)</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>            vote <span class="op">=</span> clf_entry.get(<span class="st">"vote_count"</span>, <span class="st">""</span>)</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>            total_runs <span class="op">=</span> clf_entry.get(<span class="st">"total_runs"</span>, <span class="st">""</span>)</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>            badge <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> confidence:</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>                badge_class <span class="op">=</span> {</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"high"</span>: <span class="st">"badge-high"</span>,</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"medium"</span>: <span class="st">"badge-medium"</span>,</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"low"</span>: <span class="st">"badge-low"</span>,</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>                }.get(confidence, <span class="st">"badge-medium"</span>)</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>                vote_str <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>vote<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>total_runs<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> vote <span class="op">!=</span> <span class="st">""</span> <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>                badge <span class="op">=</span> <span class="ss">f'&lt;span class="relevance-badge </span><span class="sc">{</span>badge_class<span class="sc">}</span><span class="ss">" title="</span><span class="sc">{</span>reasoning<span class="sc">}</span><span class="ss">"&gt;</span><span class="sc">{</span>confidence<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>vote_str<span class="sc">}</span><span class="ss">)&lt;/span&gt;'</span></span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>            hymn_cell <span class="op">=</span> (</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;strong&gt;</span><span class="sc">{</span>title<span class="sc">}</span><span class="ss">&lt;/strong&gt;&lt;br&gt;'</span></span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;small class="text-muted"&gt;</span><span class="sc">{</span>console<span class="sc">}</span><span class="ss">&lt;/small&gt;&lt;br&gt;'</span></span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'&lt;small class="search-count"&gt;</span><span class="sc">{</span>search_total<span class="sc">}</span><span class="ss"> results&lt;/small&gt;'</span></span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>            ) <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>            rowspan <span class="op">=</span> <span class="ss">f' rowspan="</span><span class="sc">{</span><span class="bu">len</span>(tunes)<span class="sc">}</span><span class="ss">"'</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>            td_hymn <span class="op">=</span> <span class="ss">f'&lt;td</span><span class="sc">{</span>rowspan<span class="sc">}</span><span class="ss">&gt;</span><span class="sc">{</span>hymn_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;'</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>            rows.append(<span class="ss">f"""</span></span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;tr&gt;</span></span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a><span class="ss">                </span><span class="sc">{</span>td_hymn<span class="sc">}</span></span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;&lt;a href="</span><span class="sc">{</span>url<span class="sc">}</span><span class="ss">" target="_blank"&gt;</span><span class="sc">{</span>tune_title<span class="sc">}</span><span class="ss">&lt;/a&gt; </span><span class="sc">{</span>badge<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td class="text-center"&gt;</span><span class="sc">{</span>book_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>composer<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>meter<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>key_sig<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td&gt;</span><span class="sc">{</span>n_hymnals<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a><span class="ss">                &lt;td class="text-center"&gt;</span><span class="sc">{</span>midi_cell<span class="sc">}</span><span class="ss">&lt;/td&gt;</span></span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;/tr&gt;"""</span>)</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a>    table_html <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;div class="table-responsive"&gt;</span></span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;table class="table table-striped table-hover"&gt;</span></span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;thead&gt;</span></span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;tr&gt;</span></span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th style="min-width:200px"&gt;Hymn&lt;/th&gt;</span></span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Tune&lt;/th&gt;</span></span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th class="text-center" width="50"&gt;Book&lt;/th&gt;</span></span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Composer&lt;/th&gt;</span></span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Meter&lt;/th&gt;</span></span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Key&lt;/th&gt;</span></span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;Hymnals&lt;/th&gt;</span></span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a><span class="ss">            &lt;th&gt;MIDI&lt;/th&gt;</span></span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a><span class="ss">        &lt;/tr&gt;</span></span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/thead&gt;</span></span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;tbody&gt;</span></span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a><span class="ss">        </span><span class="sc">{</span><span class="st">""</span><span class="sc">.</span>join(rows)<span class="sc">}</span></span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/tbody&gt;</span></span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/table&gt;</span></span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a><span class="ss">    &lt;/div&gt;</span></span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>    display(HTML(table_html))</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

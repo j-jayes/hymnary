@@ -31,7 +31,7 @@ from pathlib import Path
 
 filtered_path = Path("../data/processed/hymn_tune_index_filtered.json")
 raw_path = Path("../data/processed/hymn_tune_index.json")
-matches_path = Path("../data/processed/organ_book_matches.csv")
+summary_csv_path = Path("../data/processed/summary_filtered.csv")
 
 data_path = filtered_path if filtered_path.exists() else raw_path
 
@@ -56,9 +56,9 @@ if data_path and data_path.exists():
     n_unique_tunes = len(unique_slugs)
     n_with_midi = midi_count
 
-if matches_path.exists():
+if summary_csv_path.exists():
     try:
-        df_match = pd.read_csv(matches_path)
+        df_match = pd.read_csv(summary_csv_path)
         if "in_hymn_book" in df_match.columns and "tune_slug" in df_match.columns:
              # Count unique tunes that are matched
             n_matches = df_match[df_match["in_hymn_book"] == True]["tune_slug"].nunique()
