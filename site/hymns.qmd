@@ -81,12 +81,14 @@ These results have not yet been filtered by the LLM classifier. Run `uv run pyth
 #| echo: false
 
 import json
+import pandas as pd
 from pathlib import Path
 from IPython.display import HTML, display
 
 filtered_path = Path("../data/processed/hymn_tune_index_filtered.json")
 raw_path = Path("../data/processed/hymn_tune_index.json")
 classifications_path = Path("../data/processed/classifications.json")
+matches_path = Path("../data/processed/organ_book_matches.csv")
 
 data_path = filtered_path if filtered_path.exists() else raw_path
 
@@ -103,6 +105,17 @@ if data_path and data_path.exists():
         for entry in clf.get("consensus", []):
             relevance_lookup[(hymn_key, entry["tune_slug"])] = entry
 
+    # Book Matches Lookup
+    book_matches = set()
+    if matches_path.exists():
+        try:
+            df_match = pd.read_csv(matches_path)
+            if "in_hymn_book" in df_match.columns and "tune_slug" in df_match.columns:
+                 # Get set of slugs that are matched
+                book_matches = set(df_match[df_match["in_hymn_book"] == True]["tune_slug"].dropna())
+        except Exception:
+            pass
+
     # Build HTML table
     rows = []
     for hymn in hymn_data:
@@ -117,7 +130,7 @@ if data_path and data_path.exists():
             <tr>
                 <td><strong>{title}</strong><br>
                     <small class="text-muted">{console}</small></td>
-                <td colspan="6"><em>No tunes found</em></td>
+                <td colspan="7"><em>No tunes found</em></td>
             </tr>""")
             continue
             
@@ -135,6 +148,11 @@ if data_path and data_path.exists():
             # MIDI link
             midi_url = detail.get("midi_url", "")
             midi_cell = f'<a href="{midi_url}" title="Download MIDI">🎵</a>' if midi_url else ""
+
+            # Book Match Icon
+            book_cell = ""
+            if slug in book_matches:
+                book_cell = '<span title="Match found in Mission Praise" style="font-size: 1.2em;">📖</span>'
 
             # Confidence badge from classification
             clf_entry = relevance_lookup.get((hymn_key, slug), {})
@@ -165,6 +183,7 @@ if data_path and data_path.exists():
             <tr>
                 {td_hymn}
                 <td><a href="{url}" target="_blank">{tune_title}</a> {badge}</td>
+                <td class="text-center">{book_cell}</td>
                 <td>{composer}</td>
                 <td>{meter}</td>
                 <td>{key_sig}</td>
@@ -179,6 +198,7 @@ if data_path and data_path.exists():
         <tr>
             <th style="min-width:200px">Hymn</th>
             <th>Tune</th>
+            <th class="text-center" width="50">Book</th>
             <th>Composer</th>
             <th>Meter</th>
             <th>Key</th>

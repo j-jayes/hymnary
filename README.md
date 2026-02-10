@@ -8,9 +8,10 @@ An Allen organ has **182 built-in hymns** selectable from its console controller
 
 1. **Scrapes tune metadata** from [hymnary.org](https://hymnary.org/) for each of the 182 organ hymns — collecting tune title, composer, meter, incipit, key, MIDI files, copyright, and associated texts (up to 5 tunes per hymn, ranked by popularity).
 2. **Filters false positives with AI** — each scraped tune is classified as genuinely relevant or a search false-positive using OpenAI's GPT-5.2 with [structured outputs](https://platform.openai.com/docs/guides/structured-outputs). Classification is run 3 times per hymn with majority voting for reliability.
-3. **Builds a structured index** mapping every organ hymn to its verified tunes, with full metadata.
-4. **Exports results** as a formatted Excel workbook (with two sheets: tidy hymn–tune data and a per-hymn summary), filtered JSON, and CSV.
-5. **Presents the results** on a [Quarto](https://quarto.org/) website deployable via GitHub Pages, including an Excel download for offline use.
+3. **Matches tunes against Church Hymnal** — compares the AI-verified organ tunes against a CSV of the church's specific hymn book (`MP HymnTuneNames.csv`) to flag which tunes are actually printed in the pews.
+4. **Builds a structured index** mapping every organ hymn to its verified tunes, with full metadata.
+5. **Exports results** as a formatted Excel workbook (with two sheets: tidy hymn–tune data and a per-hymn summary), filtered JSON, and CSV.
+6. **Presents the results** on a [Quarto](https://quarto.org/) website deployable via GitHub Pages, including an Excel download for offline use.
 
 ## How the AI Screening Works
 
@@ -47,6 +48,7 @@ hymnary/
 │   ├── pipeline.py           # Scraping orchestrator: CSV → search → parse → JSON
 │   ├── classifier.py         # OpenAI LLM classifier (structured outputs + voting)
 │   ├── filter_pipeline.py    # Classification orchestrator with checkpoint/resume
+│   ├── matcher.py            # Matches verified tunes against church hymn book CSV
 │   └── utils.py              # Logging, file I/O, retry helpers
 ├── site/                     # Quarto website source
 │   ├── _quarto.yml           # Site configuration
@@ -92,7 +94,10 @@ uv run python -m src.pipeline
 # Step 2: Classify tunes with GPT-5.2 (~60 min, checkpoint/resume supported)
 uv run python -m src.filter_pipeline
 
-# Step 3: Build the Quarto website
+# Step 3: Match verified tunes against the Church Hymn Book
+uv run python -m src.matcher
+
+# Step 4: Build the Quarto website
 cd site && quarto render
 ```
 
@@ -121,6 +126,7 @@ This scraper is designed to be **extremely respectful** of hymnary.org's resourc
 |------|-------------|
 | `hymn_tune_index.json` | Full scraped data — all tunes for all 182 hymns |
 | `hymn_tune_index_filtered.json` | Only AI-verified relevant tunes |
+| `organ_book_matches.csv` | List of organ tunes with a boolean flag indicating if they exist in the church book |
 | `classifications.json` | Complete LLM reasoning log (all runs, votes, confidence) |
 | `summary_filtered.csv` | Tidy CSV — one row per hymn–tune pair, with `is_relevant` column |
 | `hymn_tune_data.xlsx` | Formatted Excel — two sheets: full tidy data + per-hymn summary |

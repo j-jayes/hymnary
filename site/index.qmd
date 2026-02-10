@@ -17,7 +17,7 @@ All Souls Anglican Church in Ballito has an **Allen organ** with built-in hymns 
 2. **Tune lookup** — For each hymn, we searched [Hymnary.org](https://hymnary.org/) to find which tunes are associated with it — many hymns have multiple tune settings.
 3. **Metadata collection** — For each tune, we collected the title, composer, meter, musical incipit, key, MIDI files, and other metadata.
 4. **AI-powered filtering** — We used GPT-5.2 to classify each tune as genuinely relevant or a search false-positive, running 3 independent checks with majority voting for reliability.
-5. **Hymn book matching** — *(Coming soon)* We'll cross-reference against the church's hymn book to find which organ hymns match entries in the book.
+5. **Hymn book matching** — We cross-referenced the organ tunes against the **Mission Praise** hymn book to find which organ hymns match entries in the church's book.
 
 ### Quick Stats
 
@@ -26,17 +26,19 @@ All Souls Anglican Church in Ballito has an **Allen organ** with built-in hymns 
 #| output: asis
 
 import json
+import pandas as pd
 from pathlib import Path
 
 filtered_path = Path("../data/processed/hymn_tune_index_filtered.json")
 raw_path = Path("../data/processed/hymn_tune_index.json")
-classifications_path = Path("../data/processed/classifications.json")
+matches_path = Path("../data/processed/organ_book_matches.csv")
 
 data_path = filtered_path if filtered_path.exists() else raw_path
 
 n_hymns = "—"
 n_unique_tunes = "—"
 n_with_midi = "—"
+n_matches = 0
 
 if data_path and data_path.exists():
     hymn_data = json.loads(data_path.read_text())
@@ -54,31 +56,54 @@ if data_path and data_path.exists():
     n_unique_tunes = len(unique_slugs)
     n_with_midi = midi_count
 
+if matches_path.exists():
+    try:
+        df_match = pd.read_csv(matches_path)
+        if "in_hymn_book" in df_match.columns and "tune_slug" in df_match.columns:
+             # Count unique tunes that are matched
+            n_matches = df_match[df_match["in_hymn_book"] == True]["tune_slug"].nunique()
+    except Exception:
+        pass
+
 print(f"""
 ::: {{.grid}}
 
-::: {{.g-col-4}}
+::: {{.g-col-6 .g-col-md-3}}
 ::: {{.stat-card}}
 [{n_hymns}]{{.stat-number}}
 [Organ Hymns]{{.stat-label}}
 :::
 :::
 
-::: {{.g-col-4}}
+::: {{.g-col-6 .g-col-md-3}}
 ::: {{.stat-card}}
 [{n_unique_tunes}]{{.stat-number}}
 [Unique Tunes]{{.stat-label}}
 :::
 :::
 
-::: {{.g-col-4}}
+::: {{.g-col-6 .g-col-md-3}}
 ::: {{.stat-card}}
 [{n_with_midi}]{{.stat-number}}
 [MIDI Files]{{.stat-label}}
 :::
 :::
 
+::: {{.g-col-6 .g-col-md-3}}
+::: {{.stat-card}}
+[{n_matches}]{{.stat-number}}
+[Book Matches]{{.stat-label}}
 :::
+:::
+
+:::
+
+### Overlap Analysis
+
+We cross-referenced the {n_unique_tunes} tunes found in the Organ console against the Mission Praise hymn book.
+
+- **Organ Only**: {n_unique_tunes - n_matches} tunes are unique to the organ console.
+- **Common Ground**: **{n_matches} tunes** appear in both the Organ and the Mission Praise book.
 """)
 ```
 
